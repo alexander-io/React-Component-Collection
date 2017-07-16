@@ -340,3 +340,17 @@ class Clock extends React.Component {
 }
 
 ReactDOM.render(<Clock />, root)
+
+/*
+summary of adding state to clock and making it self-contained and reusable...
+
+  1. when <Clock /> is passed to ReactDOM.render(), react calls the constructor of the clock component. since clock needs to display the current time, it initializes this.state with an object including the current time
+
+  2. react then calls the clock component render() method. this is how react learns what should be displayed on the screen. react then updates the DOM to match the clock's render output
+
+  3. when the clock output is inserted in the DOM, react calls the componentDidMount() lifecycle hook. insiude it, the clock component asks the browser to set up a timer to call tick() once a second
+
+  4. every second the browser calls the tick() method. inside it, the clock component schedules a ui update by calling setState() with an object containing the current time. thanks to the setState() call, react knows the state has changed, and calls render() method again to learn what should be on the screen. this time, this.state.date in the render() method will be different, and so the render output will include the updated time. react updates the DOM accordingly
+
+  5. if the clock component is ever removed from the DOM, react calls the componentWillUnmount() lifecycle hook so the timer is stopped
+*/
