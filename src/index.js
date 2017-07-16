@@ -724,7 +724,134 @@ function Mailbox(props) {
 }
 // const messages = ['react', 're: react', 're:re: react']
 
-const messages = ['react']
+// const messages = ['react']
+// ReactDOM.render(
+//   <Mailbox unreadMessages={messages} />, document.getElementById('leaf')
+// )
+
+/*
+LISTS AND KEYS, https://facebook.github.io/react/docs/lists-and-keys.html
+
+first, let's review how you transform lists in javascript
+
+given the code below, we use the map() function to take an array of numbers and boule their values. we assign the new array returned by map() to the variable doubled and log it :
+*/
+
+// const numbers = [1, 2, 3, 4, 5]
+// const doubled = numbers.map((number) => number*2)
+// console.log(doubled)
+//
+//
+// const lst_o_str = ['hello', 'goodbye', 'greetings']
+// const lst_o_str_add_ay = lst_o_str.map((x) => x+'ay')
+// console.log(lst_o_str_add_ay)
+
+/*
+rendering multiple components
+
+you can build collections of elements and include them in jsx using curly braces {}
+
+below, we loop through the numbers of array using the javascript map() function. we return an <li> element for each item. finally, we assign the resulting array of elements to listItems :
+*/
+
+
+// this code displays a bullet list of numbers between 1 and 5
+
+
+/*
+basic list component
+
+usually you would render lists inside a component
+
+we can refactor the previous example into a component that accpets an array of numbers and outputs an unordered list of elements
+*/
+
+/*
+when run, this code generates a warning key that should be provided for list items. a 'key' is a special string attribute you need to include when creating lists of elements. we'll discuss why it's important in the next section.
+
+let's assign a key in our list items inside numbers.map() and fix the missing key issue.
+*/
+
+/*
+KEYS
+
+keys help react identify which items have changed, are added, or are removed. keys should be givent to the elements inside the array to give elements a stable identity :
+*/
+
+// function ListItem(props) {
+//   // correct, there is no need to specify the key here
+//   return <li>{props.value}</li>
+// }
+//
+// function NumberList(props) {
+//   const numbers = props.numbers
+//   const listItems = numbers.map((number) =>
+//     // coorect, the key should be specified inside the array
+//     <ListItem key={number.toString()} value={number}/>
+//   )
+//
+//   return (
+//     <ul>
+//       {listItems}
+//     </ul>
+//   )
+// }
+//
+// const numbers = [1,2,3,4,5]
+// ReactDOM.render(
+//   <NumberList numbers={numbers} />, document.getElementById('leaf')
+// )
+// a good rule of thumb iis that elements inside map() call need keys
+
+/*
+keys must only be unique among siblings
+
+keys used within arrys should be unique among their siblings. however they don't need to be globally unique. we can use the same keys when we produce two different arrays :
+*/
+
+function Blog(props) {
+  // sidebar
+  const sidebar = (
+    <ul>
+      {props.posts.map((post) =>
+        <li key={post.id}>
+          {post.title}
+        </li>
+      )}
+    </ul>
+  )
+
+  // content
+  const content = props.posts.map((post) =>
+    <div key={post.id}>
+      <h3>{post.title}</h3>
+      <p>{post.content}</p>
+    </div>
+  )
+
+  return (
+    <div className="">
+      {sidebar}
+      <hr />
+      {content}
+    </div>
+  )
+
+}
+
+const posts = [
+  {id: 1, title: 'Hello World', content: 'Welcome to learning React!'},
+  {id: 2, title: 'Installation', content: 'You can install React from npm.'}
+];
 ReactDOM.render(
-  <Mailbox unreadMessages={messages} />, document.getElementById('leaf')
-)
+  <Blog posts={posts} />,
+  document.getElementById('leaf')
+);
+
+/*
+keys serve as a hint to react but they don't get passed to your components. i fyou need the same value in your component, pass it explicitly as a prop with a different name :
+*/
+
+// const content = posts.map((post) =>
+//   <Post key={post.id} id={post.id} title={post.title} />
+// ) // in this example, the post component can read props.id, but not props.key
