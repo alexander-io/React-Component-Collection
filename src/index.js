@@ -354,3 +354,120 @@ summary of adding state to clock and making it self-contained and reusable...
 
   5. if the clock component is ever removed from the DOM, react calls the componentWillUnmount() lifecycle hook so the timer is stopped
 */
+
+
+/*
+USING STATE CORRECTLY, https://facebook.github.io/react/docs/state-and-lifecycle.html#using-state-correctly
+
+there are three things to know about the setState() function
+
+  1. do not modify state directly
+    // wrong
+    this.state.comment = 'Hello'
+
+    // correct
+    this.setState({comment : 'Hello'})
+
+    the only place where you can assign this.state is the constructor
+
+  2. state updates may be asynchronous
+
+    react may batch multiple setState() calls into a single update for performance
+
+    because this.props and this.state may be updated asynchronously, you should not rely on their values for calculating the next state
+
+    for example, this code may fail to update the counter :
+
+    // wrong
+    this.setState({counter : this.state.counter + this.props.increment})
+
+    to fix it, use a second form of setState() that accepts a function rather than an object. that function will receive the previous state as the first argument, and the props at the time the update is applied as the second argument :
+
+    // correct, regular nested function
+    this.setState(function(prevState, props) {
+      return {
+        counter : prevState.counter + props.increment
+      }
+    })
+
+    // correct, arrow function
+    this.setState((prevState, props) => ({
+      counter : prevState.counter + props.increment
+    }))
+
+  3. state updates are merged
+    when you call setState(), react merges the object you provide into the current state.
+    for example, your state may contain several independent variables :
+
+      constructor(props) {
+        super(props)
+        this.state = {
+          post : [],
+          comments : []
+        }
+      }
+
+    then you can update them independently with separate setState() calls :
+
+      componentDidMount() {
+        fetchPosts().then(response => {
+          this.setState({
+            posts : response.posts
+          })
+        })
+
+        fetchComments().then(response => {
+          this.setState({
+            comments : response.comments
+          })
+        })
+      }
+
+    the merging is shallow, so this.setState({comments}) leave this.state.posts intact, but completely replaces this.state.comments
+*/
+
+/*
+THE DATA FLOWS DOWN, https://facebook.github.io/react/docs/state-and-lifecycle.html#the-data-flows-down
+
+neither parent nor child components can know if a certain component is stateful or stateless, and they shouldn't care whether it is defined as a function or a class
+
+this is why state is often called local or encapsulated. it is not accessible to any component other than the one that owns and sets it
+
+a component may choose to pass its state down as props to its child components
+
+  <h2>it is {this.state.date.toLocaleTimeString()}</h2>
+
+this also works for user-defined components :
+  <FormattedDate date={this.state.date} />
+
+the FormattedDate component would receive the data in its props and wouldn't know whether it came from the clock's state, from the clock's props, or was typed by hand
+
+  function FormattedDate(props) {
+    return <h2>it is {props.date.toLocaleTimeString()}</h2>
+  }
+
+this is commonly called a 'top-down' or 'unidirectional' data flow. any state is always owned by some specific component, and any data or ui derived from that state can only affect components 'below' them in the tree
+
+if you imagine a component tree as a waterfall of props, each component's state is like an additional water source that joins it at an arbirtrary point but also flows down
+
+to show that all components are truly isolated, we can create an app component that renders three <Clock>s :
+  function App() {
+    return (
+      <div>
+        <Clock />
+        <Clock />
+        <Clock />
+      </div>
+    )
+  }
+
+  ReactDOM.render(
+    <App />, document.getElementById('root')
+  )
+
+
+each clock sets up its own timer and updates independently
+
+in react apps, whether a component is stateful or stateless is considered an implementation detail of the component that may change over time. you can use stateless components inside stateful components, and vice versa
+
+*/
