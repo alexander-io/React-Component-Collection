@@ -471,3 +471,88 @@ each clock sets up its own timer and updates independently
 in react apps, whether a component is stateful or stateless is considered an implementation detail of the component that may change over time. you can use stateless components inside stateful components, and vice versa
 
 */
+
+/*
+HANDLING EVENTS, https://facebook.github.io/react/docs/handling-events.html
+
+handling events with react elements is very similar to handling events on DOM elements
+there are some syntactic differences :
+  react events are nam,ed useing camelCase, rather than lowercase
+  with jsx you pass a function as the event handler, rather than a string
+
+for example, the html
+  <button onClick="activateLasers()">
+    Activate Lasers
+  </button>
+
+is slightly different in react :
+  <button onClick={activateLasers}>
+    Activate Lasers
+  </button>
+
+another difference is that you cannot return false to prevent default behavior in react. you must call prevent default explicitly. for example, with plain html, to prevent the default link behavior of opening a new page, you can write :
+
+  <a href="#" onclick="console.log('the linke was clicked'); return false">
+    Click me
+  </a>
+
+in react this could instead be :
+  function ActionLink() {
+    function handleClick(e) {
+      e.preventDefault();
+      console.log('the link was clicked')
+    }
+
+    return (
+      <a href="#" onClick={handleClick}>
+        Click me
+      </a>
+    )
+  }
+
+here, e is a synthetic event. react defines these synthetic events according to the w3c spec, so you don't need to worry abut cross-browser compatibility.
+
+when using react you should generally not need to call addEventListener to add listeners to a DOM element after it is created. Instead, just provide a listener when the element is initially rendered
+
+when you define a component using an es6 class, a common pattern is for an event handler to be a method on the class. for example, this toggle component renders a button that lets the user toggle between 'on' and 'off' states :
+
+*/
+
+class Toggle extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {isToggleOn : true}
+    // this binding is necessary to make 'this' work in the callback
+    this.handleClick = this.handleClick.bind(this)
+  }
+
+
+  handleClick() {
+    this.setState(prevState => ({
+      isToggleOn : !prevState.isToggleOn
+    }))
+  }
+
+  // render component
+  render() {
+    return (
+      <button onClick={this.handleClick}>
+        {this.state.isToggleOn ? 'ON' : 'OFF'}
+      </button>
+    )
+  }
+}
+
+ReactDOM.render(
+  <Toggle />, document.getElementById('branch')
+)
+
+/*
+you have to be careful about the meaning of this in jsx callbacks. in javascript, class methods are not bound by default. if you forget to bind this.handleClick and pass it to onClick, this will be undefined when the function is actually called
+
+this is not react-specific behavior; it is a part of how functions work in javascript. generally, if you refer to a method without () after it, such as onClick={this.handleClick} you should bind that method
+
+if calling bind annoys you, there are two ways you can get around this. if you ar eusing the experimental property initializer syntax, you can use property initializers to conrrectly bind callbacks :
+
+*/
