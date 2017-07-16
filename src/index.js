@@ -592,3 +592,108 @@ class LoggingButton extends React.Component {
 /*
 the problem with this syntax is that a different callback is created each time the loggingbutton renders. in most cases, this is fine. however, if this clalabck is passed as a prop to lower components, those components might do an extra re-rendering. we generally recommend binding in the constructor or using the property initializer syntax, to avoid this ort of performance problems.
 */
+
+
+/*
+CONDITIONAL RENDERING, https://facebook.github.io/react/docs/conditional-rendering.html
+
+in react, you can create distinct components that encapsulate behavior you need. then, you can render only some of them, depending on the state of your application.
+
+conditional rendering in react works the same way conditions work in javascript. use javascript operators like if or the conditional operator to create elements representing the current state, and let react upate the UI to match them
+*/
+
+function UserGreeting(props) {
+  return <h1>welcome back!</h1>
+}
+
+function GuestGreeting(props) {
+  return <h1>please sign up</h1>
+}
+
+/*
+we'll create a Greeting component that displays either of these components depending on whether a user is logged in
+*/
+
+function Greeting(props) {
+  const isLoggedIn = props.isLoggedIn
+
+  if (isLoggedIn) {
+    return <UserGreeting />;
+  }
+  return <GuestGreeting />;
+}
+
+ReactDOM.render(
+  // if ifLoggedIn={true}, then the Greeting component returns a UserGreeting component, else GuestGreeting component
+  <Greeting isLoggedIn={true} />, document.getElementById('branch')
+)
+
+/*
+ELEMENT VARIABLES, https://facebook.github.io/react/docs/conditional-rendering.html
+
+you can use variables to store elements. this can help you conditionally render a part of the component while the rest of the output doesn't change
+
+consider these two new components representing logout and login buttons :
+*/
+
+function LoginButton(props) {
+  return (
+    <button onClick={props.onClick}>
+      login
+    </button>
+
+  )
+}
+
+function LogoutButton(props) {
+  return (
+    <button onClick={props.onClick}>
+      logout
+    </button>
+  )
+}
+
+/*
+in the example below, we will create a stateful component called LoginControl
+
+it will render either <LoginButton /> or <LogoutButton /> depending on its current state. it will also render a <Greeting /> from the previous example :
+*/
+class LoginControl extends React.Component {
+  constructor(props) {
+    super(props)
+    this.handleLoginClick = this.handleLoginClick.bind(this)
+    this.handleLogoutClick = this.handleLogoutClick.bind(this)
+    this.state = {isLoggedIn : false}
+  }
+
+  handleLoginClick() {
+    this.setState({isLoggedIn : true})
+  }
+
+  handleLogoutClick() {
+    this.setState({isLoggedIn : false})
+  }
+
+  render() {
+    const isLoggedIn = this.state.isLoggedIn
+
+    let button = null
+    if (isLoggedIn) {
+      button = <LogoutButton onClick={this.handleLogoutClick} />;
+    } else {
+      button = <LoginButton onClick={this.handleLoginClick} />;
+    }
+
+    return (
+      <div className="">
+        <Greeting isLoggedIn={isLoggedIn} />
+        {button}
+      </div>
+    )
+  }
+}
+
+ReactDOM.render(
+  <LoginControl />,
+  document.getElementById('stem')
+);
