@@ -210,22 +210,22 @@ we can start encapsulating how the clock looks...
 
 
 // IMPLEMENTATION 1
-let Clock = function(props) {
-  return (
-    <div className="">
-      <h1>hello, world</h1>
-      <h2>it is {props.date.toLocaleTimeString()}</h2>
-    </div>
-  )
-}
-
-let tick = function(){
-  ReactDOM.render(
-    <Clock date={new Date()} />, document.getElementById('root')
-  )
-}
-
-setInterval(tick, 1000)
+// let Clock = function(props) {
+//   return (
+//     <div className="">
+//       <h1>hello, world</h1>
+//       <h2>it is {props.date.toLocaleTimeString()}</h2>
+//     </div>
+//   )
+// }
+//
+// let tick = function(){
+//   ReactDOM.render(
+//     <Clock date={new Date()} />, document.getElementById('root')
+//   )
+// }
+//
+// setInterval(tick, 1000)
 
 // implementation 1 fails because it misses a crucial requirement, the fact that the clock sets up a timer and updates the ui every second should be an implementation detail of the Clock
 
@@ -255,13 +255,88 @@ you can convert a functional component like clock to a class in five steps
 following this conversion algorithm, the Clock class becomes :
 */
 
+// class Clock extends React.Component {
+//
+//   constructor(props) {
+//     super(props) // note how props is passed to the base constructor
+//     this.state = {date: new Date()}
+//   }
+//
+//   render() {
+//     return (
+//       <div className="">
+//         <h1>hello, world</h1>
+//         <h2>it is {this.state.date.toLocaleTimeString()}</h2>
+//       </div>
+//     )
+//   }
+// } // Clock is now defined as a class rather than a function
+
+// adding local state to a class, https://facebook.github.io/react/docs/state-and-lifecycle.html#adding-local-state-to-a-class
+
+/*
+move the date from props to state in thee steps
+  1. replace this.props.date with this.state.date in the render() method
+  2. add a class constructor that assigns the initial this.state
+  3. remove the date prop from the <Clock /> element
+*/
+
+// ReactDOM.render(
+//   <Clock />, document.getElementById('root')
+// )
+
+/*
+ADDING LIFECYCLE METHODS TO A CLASS, https://facebook.github.io/react/docs/state-and-lifecycle.html#adding-lifecycle-methods-to-a-class
+
+in applications with many components, its very important to free up resources taken by the components when they are destroyed (GARBAGE COLLECTION)
+
+want to set up a timer whenever the clock is rendered to the DOM for the first time. this is called 'mounting' in react
+
+want to clear that timer whenever the DOM produced by the clock is removed. this is called 'unmounting' in react
+
+can declare special methods on the component class to run some code when a component mounts and unmounts
+
+  componentDidMount()
+  componentWillUnmount()
+
+these methods are called 'lifecycle hooks'
+
+the componentDidMount() hook runs after the component output has been rendered to the DOM, this is a good place to set up a timer
+
+*/
+
 class Clock extends React.Component {
+
+  constructor(props) {
+    super(props) // note how props is passed to the base constructor
+    this.state = {date: new Date()}
+  }
+
+  // the componentDidMount() hook runs after the component output has been rendered to the DOM, this is a good place to set up a timer
+  componentDidMount() {
+    this.timerID = setInterval(
+      () => this.tick(), 1000
+    )
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID)
+  }
+
+  tick() {
+    this.setState({
+      date: new Date()
+    })
+  }
+
   render() {
     return (
       <div className="">
         <h1>hello, world</h1>
-        <h2>it is {this.props.date.toLocaleTimeString()}</h2>
+        <h2>it is {this.state.date.toLocaleTimeString()}</h2>
       </div>
     )
   }
-} // Clock is now defined as a class rather than a function
+}
+
+ReactDOM.render(<Clock />, root)
