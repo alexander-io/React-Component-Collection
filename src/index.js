@@ -554,5 +554,41 @@ you have to be careful about the meaning of this in jsx callbacks. in javascript
 this is not react-specific behavior; it is a part of how functions work in javascript. generally, if you refer to a method without () after it, such as onClick={this.handleClick} you should bind that method
 
 if calling bind annoys you, there are two ways you can get around this. if you ar eusing the experimental property initializer syntax, you can use property initializers to conrrectly bind callbacks :
+*/
 
+// class LoggingButton extends React.Component {
+//   // this syntax ensures 'this' is bound within handleClick
+//   // warning : this is 'experimental syntax'
+//   handleCLick = () => {
+//     console.log('this is:', this);
+//   }
+//
+//   render() {
+//     return (
+//       <button onClick={this.handleClick}>
+//         click me
+//       </button>
+//     )
+//   }
+// }
+
+/*
+if you aren't using property initializer snytax, you can use an arrow function in the callback :
+*/
+
+class LoggingButton extends React.Component {
+  handleClick() {
+    console.log('this is :', this);
+  }
+  render() {
+    return (
+      <button onClick={(e) => this.handleClick(e)}>
+        click me
+      </button>
+    )
+  }
+}
+
+/*
+the problem with this syntax is that a different callback is created each time the loggingbutton renders. in most cases, this is fine. however, if this clalabck is passed as a prop to lower components, those components might do an extra re-rendering. we generally recommend binding in the constructor or using the property initializer syntax, to avoid this ort of performance problems.
 */
