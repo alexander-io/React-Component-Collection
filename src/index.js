@@ -5,13 +5,13 @@ import './index.css'
 
 let root = document.getElementById('root')
 
-function tick() {
-  const curr_time = <h1>{new Date().toLocaleTimeString()}</h1>
-
-  ReactDOM.render(curr_time, root)
-}
-
-setInterval(tick, 1000)
+// function tick() {
+//   const curr_time = <h1>{new Date().toLocaleTimeString()}</h1>
+//
+//   ReactDOM.render(curr_time, root)
+// }
+//
+// setInterval(tick, 1000)
 
 /*
  * components let you split hte ui into independent, reusable pieces, and think about each piece in isolation
@@ -76,67 +76,192 @@ setInterval(tick, 1000)
 // let c = <h1>ah-vak-oh-dewww</h1>
 // TODO Functional and Class Components
 
-//
-// class Square extends React.Component {
-//   render() {
-//     return (
-//       <button className="square">
-//         { this.props.value }
-//       </button>
-//     );
-//   }
+
+// COMPOSING COMPONENTS, https://facebook.github.io/react/docs/components-and-props.html#composing-components
+
+/*
+components can refer to other components in their outpu. this lets us use the same component abstraction for any level of detail. a button, a form, a dialog, a screen: in react apps, all those are commonly expressed as components
+
+for example, we can create an app component that renders Welcome many times
+*/
+
+// let Welcome = function(props) {
+//   return <h1>hello, {props.name}</h1>
 // }
+
+
+/*
+by convention, new react apps have a single App component at the very top
+
+however, if you integrate react into an existing app, you might start bottom up with a small component like button and gradually work your way to the top of the view hierarchy
+
+caveat, components must return a single root element, this is why in the App() function a <div>...</div> wrapper is needed to contain the numerous <Welcome /> elements
+*/
+
+// let App = function() {
+//   return (
+//     <div>
+//       <Welcome name="justin" />
+//       <Welcome name="kristen" />
+//       <Welcome name="grace" />
 //
-// class Board extends React.Component {
-//   renderSquare(i) {
-//     return <Square value={i}/>;
-//   }
-//
-//   render() {
-//     const status = 'Next player : X';
-//
-//     return (
-//       <div>
-//         <div className="status">{ status }</div>
-//         <div className="board-row">
-//           {this.renderSquare(0)}
-//           {this.renderSquare(1)}
-//           {this.renderSquare(2)}
-//         </div>
-//         <div className="board-row">
-//           {this.renderSquare(3)}
-//           {this.renderSquare(4)}
-//           {this.renderSquare(5)}
-//         </div>
-//         <div className="board-row">
-//           {this.renderSquare(6)}
-//           {this.renderSquare(7)}
-//           {this.renderSquare(8)}
-//         </div>
-//       </div>
-//     );
-//   }
+//     </div>
+//   )
 // }
-//
-// class Game extends React.Component {
-//   render() {
-//     return (
-//       <div className="game">
-//         <div className="game-board">
-//           <Board />
-//         </div>
-//         <div className="game-info">
-//           <div>{/* TODO */}</div>
-//           <ol>{/* TODO */}</ol>
-//         </div>
-//       </div>
-//     );
-//   }
-// }
-//
-// // =================================
 //
 // ReactDOM.render(
-//   <Game />,
-//   document.getElementById('root')
-// );
+//   <App />, document.getElementById('branch')
+// )
+
+
+/*
+extracting components
+https://facebook.github.io/react/docs/components-and-props.html#extracting-components
+
+don't be afraid to split components into smaller components, for example... consider this comment component
+*/
+
+// let formatDate = function(date) {
+//
+// }
+
+// writing components according to the following method can result in a component that's tricky to change or modify...
+// as an alternative, re-write components with indivdual elements as return values...
+// let Comment = function(props){
+//   return (
+//     <div className="Comment">
+//       <UserInfo user={props.author} />
+//       {/* <div className="UserInfo">
+//         <img className="Avatar" src={props.author.avatarURL} alt={props.author.name}
+//         />
+//         <Avatar user={props.author} />
+//         <div className="UserInfo-name">
+//           {props.author.name}
+//         </div>
+//       </div> */}
+//       <div className="Comment-text">
+//         {props.text}
+//       </div>
+//       <div className="Comment-date">
+//         {formatDate(props.date)}
+//       </div>
+//     </div>
+//   );
+// }
+
+// using the avatar function, we can simplify the Comment component somewhat
+// replace the following line with the one following it
+//  <img className="Avatar" src={props.author.avatarURL} alt={props.author.name} />
+// <Avatar user={props.author} />
+// let Avatar = function(props) {
+//   return (
+//     <img className="Avatar" src={props.user.avatarURL} alt={props.user.name} />
+//   )
+// }
+
+// next, extract the userinfo component that renders an Avatar next to the user's name
+
+// let UserInfo = function(props){
+//   return (
+//     <div className="UserInfo">
+//       <Avatar user={props.user} />
+//       <div className="UserInfo-name">
+//         {props.user.name}
+//       </div>
+//     </div>
+//   )
+// }
+
+
+// props are read only, https://facebook.github.io/react/docs/components-and-props.html#props-are-read-only
+
+/*
+whether you declare a component as a function or a class, it must never modify its own props consider this sum function...
+
+such functions are called 'pure' because they do not attempt to change their inputss, and always return the same result for the same inputs
+*/
+// let sum = function(a,b) {
+//   return a+b
+// }
+
+/*
+in contrast, this function is impure because it changes its own input
+*/
+// let withdraw = function(account, amount){
+//   account.total -= amount;
+// }
+
+/*
+sooooooo, react is pretty flexible but it has a single strict rule :
+all react components must act like pure functions with respect to their props
+
+*/
+
+
+// STATE AND LIFECYCLE, https://facebook.github.io/react/docs/state-and-lifecycle.html
+/*
+in this section, we learn how to make a Clock component truly reusable and encapsulated.
+
+it willset up its own timer and update itself every second
+
+we can start encapsulating how the clock looks...
+*/
+
+
+
+// IMPLEMENTATION 1
+let Clock = function(props) {
+  return (
+    <div className="">
+      <h1>hello, world</h1>
+      <h2>it is {props.date.toLocaleTimeString()}</h2>
+    </div>
+  )
+}
+
+let tick = function(){
+  ReactDOM.render(
+    <Clock date={new Date()} />, document.getElementById('root')
+  )
+}
+
+setInterval(tick, 1000)
+
+// implementation 1 fails because it misses a crucial requirement, the fact that the clock sets up a timer and updates the ui every second should be an implementation detail of the Clock
+
+// ideally, we want to write the following and have the clockl update itself
+// ReactDOM.render(
+//   <Clock />, document.getElementById('root')
+// )
+
+/*
+to implement this, we need to add 'state' to the clock component
+
+state is similar to props, but it is private and fully controlled by the component
+
+we mentioned before that components defined as classes have some additional features. local state is exactly that : a feature available only to classes
+*/
+
+/*
+CONVERTING A FUNCTION TO A CLASS, https://facebook.github.io/react/docs/state-and-lifecycle.html#converting-a-function-to-a-class
+
+you can convert a functional component like clock to a class in five steps
+  1. create an es6 class with the same name that extends React.Component
+  2. add a single empty method to it called render()
+  3. move the body of the function into the render() method
+  4. replace props with this.props in the render() body
+  5. delete the remaining empty function declaration
+
+following this conversion algorithm, the Clock class becomes :
+*/
+
+class Clock extends React.Component {
+  render() {
+    return (
+      <div className="">
+        <h1>hello, world</h1>
+        <h2>it is {this.props.date.toLocaleTimeString()}</h2>
+      </div>
+    )
+  }
+} // Clock is now defined as a class rather than a function
