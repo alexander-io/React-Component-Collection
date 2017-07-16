@@ -855,3 +855,37 @@ keys serve as a hint to react but they don't get passed to your components. i fy
 // const content = posts.map((post) =>
 //   <Post key={post.id} id={post.id} title={post.title} />
 // ) // in this example, the post component can read props.id, but not props.key
+
+
+/*
+embedding map() in jsx
+
+in the examples above we declared separate listItems variables and it included it in jsx
+*/
+// function NumberList(props) {
+//   const numbers = props.numbers
+//   const listItems = numbers.map((number) =>
+//     <ListItem key={number.toString()} value={number} />
+//   )
+//
+//   return (
+//     <ul>
+//       {listItems}
+//     </ul>
+//   )
+// }
+
+/*
+jsx allows embedding any expressions in curly braces so we could inline the map() result
+*/
+
+// function NumberList(props) {
+//   const numbers = props.numbers
+//   return (
+//     <ul>
+//       {numbers.map((number) =>
+//         <ListItem key={number.toString()} value={number} />
+//       )}
+//     </ul>
+//   )
+// }
