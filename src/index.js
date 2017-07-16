@@ -697,3 +697,34 @@ ReactDOM.render(
   <LoginControl />,
   document.getElementById('stem')
 );
+
+/*
+while declaring a variable and using an if statement is a fine way to conditionally render a component, sometimes you might want ot use a shorter syntax. there are a few ways to inline conditions in jsx, explained below
+*/
+
+/*
+inline if with logical && operator
+
+you may embed any expressions in jsx by wrapping them in curly braces. this includes the javascript && operator. it can be handy for conditionally including an element :
+*/
+
+function Mailbox(props) {
+  const unreadMessages = props.unreadMessages;
+
+  return (
+    <div className="">
+      <h1>hello</h1>
+      {unreadMessages.length > 0 &&
+        <h2>
+          you have {unreadMessages.length} unread messages
+        </h2>
+      }
+    </div>
+  )
+}
+// const messages = ['react', 're: react', 're:re: react']
+
+const messages = ['react']
+ReactDOM.render(
+  <Mailbox unreadMessages={messages} />, document.getElementById('leaf')
+)
